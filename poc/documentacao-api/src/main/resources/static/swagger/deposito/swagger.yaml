@@ -1,0 +1,200 @@
+openapi: 3.0.1
+info:
+  title: Depósitos API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/depositos
+    description: localhost - gateway
+  - url: http://api.boaentrega.com.br/api/depositos
+    description: k8s - gateway
+paths:
+  /{id}:
+    get:
+      tags:
+        - depósitos
+      summary: Busca um depósito por id
+      operationId: buscarDepositoPorId
+      parameters:
+        - name: id
+          in: path
+          description: Id do depósito
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Depósito encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositoDTO'
+  /:
+    get:
+      tags:
+        - depósitos
+      summary: Busca todos os depósitos
+      operationId: buscarDepositos
+      parameters:
+        - name: size
+          in: query
+          description: Page size
+          example: 10
+        - name: page
+          in: query
+          description: Page number
+          example: 0
+        - name: sort
+          in: query
+          description: Sort
+      responses:
+        200:
+          description: Depósitos encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfDepositoDTO'
+    post:
+      tags:
+        - depósitos
+      summary: Cria um depósito
+      operationId: criarDeposito
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormDepositoDTO'
+        required: true
+      responses:
+        201:
+          description: Id do depósito criado
+components:
+  schemas:
+    DepositoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nome:
+          type: string
+          example: Depósito
+        endereco:
+          $ref: '#/components/schemas/EnderecoDTO'
+    EnderecoDTO:
+      type: object
+      properties:
+        endereco:
+          type: string
+          example: Rua XYZ
+        cidade:
+          type: string
+          example: Chapecó
+        estado:
+          type: string
+          example: SC
+        cep:
+          type: integer
+          format: int32
+          example: 89801000
+        complemento:
+          type: string
+          example: Complemento XYZ
+        contato:
+          type: string
+          example: 49 9 0000-1111
+    FormDepositoDTO:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Depósito
+        endereco:
+          $ref: '#/components/schemas/FormEnderecoDTO'
+    FormEnderecoDTO:
+      type: object
+      properties:
+        endereco:
+          type: string
+          example: Rua XYZ
+        cidade:
+          type: string
+          example: Chapecó
+        estado:
+          type: string
+          example: SC
+        cep:
+          type: integer
+          format: int32
+          example: 89801000
+        complemento:
+          type: string
+          example: Complemento XYZ
+        contato:
+          type: string
+          example: 49 9 0000-1111
+    Pageable:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+        unpaged:
+          type: boolean
+        paged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    Page:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: in32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        peageable:
+          $ref: '#/components/schemas/Pageable'
+        empty:
+          type: boolean
+    PageOfDepositoDTO:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/DepositoDTO'

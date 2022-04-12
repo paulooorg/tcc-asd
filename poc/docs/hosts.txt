@@ -1,0 +1,3 @@
+# TCC ASD - POC
+127.0.0.1 api.boaentrega.com.br
+127.0.0.1 desenvolvedores.boaentrega.com.br

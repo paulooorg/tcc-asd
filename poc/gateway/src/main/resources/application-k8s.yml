@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: documentacao-api
+          uri: http://k8s-poc-documentacao-api.default.svc.cluster.local/documentacao-api
+          predicates:
+            - Path=/documentacao-api/**
+        - id: deposito
+          uri: http://k8s-poc-deposito.default.svc.cluster.local/api/depositos
+          predicates:
+            - Path=/api/depositos/**

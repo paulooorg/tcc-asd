@@ -1,0 +1,193 @@
+openapi: 3.0.1
+info:
+  title: Entregas API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/entregas
+    description: localhost - gateway
+paths:
+  /entregar/situacao/entregue:
+    post:
+      tags:
+        - entregas
+      summary: Cria uma entrega com situação ENTREGUE
+      operationId: criarEntregaComoEntregue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormSucessoEntregaDTO'
+        required: true
+      responses:
+        201:
+          description: Entrega criada
+  /entregar/situacao/nao-entregue:
+    post:
+      tags:
+        - entregas
+      summary: Cria uma entrega com situação NAO_ENTREGUE
+      operationId: criarEntregaComoNaoEntregue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormFalhaEntregaDTO'
+        required: true
+      responses:
+        201:
+          description: Entrega criada
+  /pedido:
+    get:
+      tags:
+        - entregas
+      summary: Busca entrega por código do pedido
+      operationId: buscarEntregaPorCodigoDoPedido
+      parameters:
+        - name: codigo
+          in: query
+          description: Código do pedido
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Entrega encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntregaDTO'
+  /{id}/assinatura:
+    get:
+      tags:
+        - entregas
+      summary: Busca assinatura da entrega
+      operationId: buscarAssinaturaDaEntrega
+      parameters:
+        - name: id
+          in: path
+          description: Id da entrega
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Assinatura da entrega
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /assinatura:
+    post:
+      tags:
+        - entregas
+      summary: Cria assinatura para adicionar na entrega
+      operationId: criarAssinatura
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                assinatura:
+                  type: string
+                  format: binary
+      responses:
+        201:
+          description: Assinatura criada
+components:
+  schemas:
+    FormSucessoEntregaDTO:
+      type: object
+      properties:
+        codigoPedido:
+          type: string
+          example: 1a9cf538-d290-44f3-87be-dec58ab0394f
+        responsavelEntrega:
+          type: string
+          example: Parceiro
+        assinaturaId:
+          type: integer
+          format: int64
+          example: 1
+        observacao:
+          type: string
+          example: Observação
+        latitude:
+          type: number
+          format: double
+          example: -25.1234
+        longitude:
+          type: number
+          format: double
+          example: -45.1465
+    FormFalhaEntregaDTO:
+      type: object
+      properties:
+        codigoPedido:
+          type: string
+          example: 1a9cf538-d290-44f3-87be-dec58ab0394f
+        responsavelEntrega:
+          type: string
+          example: Parceiro
+        motivo:
+          type: string
+          enum:
+            - MUDOUSE
+            - RECUSADO
+            - AUSENTE
+            - ENDERECO_INSUFICIENTE
+            - FALECIDO
+            - OUTROS
+        observacao:
+          type: string
+          example: Observação
+        latitude:
+          type: number
+          format: double
+          example: -25.1234
+        longitude:
+          type: number
+          format: double
+          example: -45.1465
+    EntregaDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        codigoPedido:
+          type: string
+          example: 1a9cf538-d290-44f3-87be-dec58ab0394f
+        responsavelEntrega:
+          type: string
+          example: Responsável entrega
+        dataEntrega:
+          type: string
+          example: "2022-04-09T21:10:56"
+        situacaoEntrega:
+          type: string
+          enum:
+            - ENTREGUE
+            - NAO_ENTREGUE
+          example: ENTREGUE
+        motivoEntrega:
+          type: string
+          enum:
+            - MUDOUSE
+            - RECUSADO
+            - AUSENTE
+            - ENDERECO_INSUFICIENTE
+            - FALECIDO
+            - OUTROS
+        observacao:
+          type: string
+        latitude:
+          type: number
+          format: double
+          example: -25.1234
+        longitude:
+          type: number
+          format: double
+          example: -25.4567

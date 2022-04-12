@@ -1,0 +1,35 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /documentacao-api
+management:
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+  endpoint.health.probes.enabled: true
+spring:
+  application:
+    name: documentacao-api
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    urls:
+      - name: entrega
+        url: /documentacao-api/swagger/entrega/swagger.yaml
+      - name: parceiro
+        url: /documentacao-api/swagger/parceiro/swagger.yaml
+      - name: frete
+        url: /documentacao-api/swagger/frete/swagger.yaml
+      - name: cliente
+        url: /documentacao-api/swagger/cliente/swagger.yaml
+      - name: pedido
+        url: /documentacao-api/swagger/pedido/swagger.yaml
+      - name: deposito
+        url: /documentacao-api/swagger/deposito/swagger.yaml
+      - name: middleware-sge
+        url: /documentacao-api/swagger/middleware-sge/swagger.yaml
+    path: /docs.html
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true

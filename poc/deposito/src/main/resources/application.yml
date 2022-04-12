@@ -1,0 +1,24 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /api/depositos
+management:
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+  endpoint.health.probes.enabled: true
+spring:
+  application:
+    name: deposito
+  profiles:
+    active: "@currentProfile@"
+  jpa:
+    open-in-view: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+logging.level:
+  org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

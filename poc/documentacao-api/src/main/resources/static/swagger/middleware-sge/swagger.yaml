@@ -1,0 +1,51 @@
+openapi: 3.0.1
+info:
+  title: Middleware SGE API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/middleware-sge
+    description: localhost - gateway
+paths:
+  /seguros/calcular:
+    post:
+      tags:
+        - seguros
+      summary: Calcula seguro
+      operationId: calcularSeguro
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormCalcularValorSeguroDTO'
+        required: true
+      responses:
+        200:
+          description: Custo do seguro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustoSeguroDTO'
+components:
+  schemas:
+    FormCalcularValorSeguroDTO:
+      type: object
+      properties:
+        cepOrigem:
+          type: integer
+          format: int32
+          example: 123
+        cepDestino:
+          type: integer
+          format: int32
+          example: 456
+        valorDeclarado:
+          type: number
+          format: double
+          example: 120
+    CustoSeguroDTO:
+        type: object
+        properties:
+          custoTotal:
+            type: number
+            format: double
+            example: 5

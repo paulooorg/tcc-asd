@@ -1,0 +1,40 @@
+server:
+  port: 8086
+  servlet:
+    context-path: /api/clientes
+management:
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+  endpoint.health.probes.enabled: true
+spring:
+  application:
+    name: cliente
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9000/auth/realms/SistemaGSL/protocol/openid-connect/certs
+  jpa:
+    open-in-view: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cliente
+    username: root
+    password: root
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+message-broker:
+  criar-pedido:
+    queue: pedido-criar-pedido-queue
+logging.level:
+  org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

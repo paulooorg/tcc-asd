@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-poc-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-poc-gateway
+  template:
+    metadata:
+      labels:
+        app: k8s-poc-gateway
+    spec:
+      containers:
+        - name: poc-gateway
+          image: poc-gateway:latest
+          imagePullPolicy: Never
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/readiness
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/liveness
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-poc-gateway
+spec:
+  ports:
+    - name: 8080-8080
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: k8s-poc-gateway
+  type: LoadBalancer

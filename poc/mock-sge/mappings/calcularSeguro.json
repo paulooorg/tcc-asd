@@ -1,0 +1,20 @@
+{
+  "mappings": [
+      {
+        "metadata": {
+          "description": "Mapping Calcular Seguro"
+        },
+        "request": {
+          "url": "/sge/seguros/calcular",
+          "method": "POST"
+        },
+        "response": {
+          "status": 200,
+          "bodyFileName": "responseCalcularSeguro.json",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      }
+  ]
+}

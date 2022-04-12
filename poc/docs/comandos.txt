@@ -1,0 +1,38 @@
+mvn clean install -DskipTests -Pk8s
+docker build -t poc-gateway .
+
+docker build -t poc-documentacao-api .
+
+mvn clean install -DskipTests -Pk8s
+docker build -t poc-deposito .
+
+eval $(minikube docker-env)             # unix shells
+minikube docker-env | Invoke-Expression # PowerShell
+
+minikube start
+minikube dashboard
+
+kubectl get svc
+kubectl get pods
+
+kubectl apply -f .\gateway.yml
+kubectl apply -f .\documentacao-api.yml
+kubectl apply -f .\deposito.yml
+kubectl apply -f .\ingress.yml
+
+kubectl logs -f pod
+
+kubectl get svc --all-namespaces
+
+kubectl port-forward service/k8s-poc-gateway 8080:80
+minikube tunnel
+
+ab -s 40 -c 2 -t 120 http://api.boaentrega.com.br/api/depositos/
+
+-s = tempo de espera para cada request (máximo)
+-c = número de requests feitas a cada momento (concorrência)
+-t = tempo do teste em segundos
+
+kubectl get pods --watch
+
+kubectl get events -o custom-columns=FirstSeen:.firstTimestamp,LastSeen:.lastTimestamp,Type:.type,Reason:.reason,Message:.message --watch

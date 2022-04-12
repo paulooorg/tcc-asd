@@ -1,0 +1,33 @@
+server:
+  port: 8090
+  servlet:
+    context-path: /api/middleware-sge
+management:
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+  endpoint.health.probes.enabled: true
+spring:
+  application:
+    name: middleware-sge
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sge
+    username: root
+    password: root
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+message-broker:
+  pedido-criado:
+    queue: middleware-sge-pedido-criado-queue
+    exchange: middleware-sge-pedido-criado-exchange
+    routing-key: middleware-sge-pedido-criado-routing-key
+  pedido-entregue:
+    queue: middleware-sge-pedido-entregue-queue
+    exchange: middleware-sge-pedido-entregue-exchange
+    routing-key: middleware-sge-pedido-entregue-routing-key
+logging.level:
+  org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

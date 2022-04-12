@@ -1,0 +1,49 @@
+server:
+  port: 8087
+  servlet:
+    context-path: /api/pedidos
+management:
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+  endpoint.health.probes.enabled: true
+spring:
+  application:
+    name: pedido
+  jpa:
+    open-in-view: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/pedido
+    username: root
+    password: root
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+message-broker:
+  criar-pedido:
+    queue: pedido-criar-pedido-queue
+    exchange: pedido-criar-pedido-exchange
+    routing-key: pedido-criar-pedido-routing-key
+  atribuir-pedido:
+    queue: pedido-atribuir-pedido-queue
+    exchange: pedido-atribuir-pedido-exchange
+    routing-key: pedido-atribuir-pedido-routing-key
+  entregar-pedido:
+    queue: pedido-entregar-pedido-queue
+    exchange: pedido-entregar-pedido-exchange
+    routing-key: pedido-entregar-pedido-routing-key
+  pedido-criado:
+    queue: middleware-sge-pedido-criado-queue
+  pedido-entregue:
+    queue: middleware-sge-pedido-entregue-queue
+logging.level:
+  org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

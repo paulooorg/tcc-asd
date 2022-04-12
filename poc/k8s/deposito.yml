@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-poc-deposito
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-poc-deposito
+  template:
+    metadata:
+      labels:
+        app: k8s-poc-deposito
+    spec:
+      containers:
+        - name: poc-deposito
+          image: poc-deposito:latest
+          imagePullPolicy: Never
+          ports:
+           - containerPort: 8088
+          readinessProbe:
+            httpGet:
+              port: 8088
+              path: /api/depositos/actuator/health/readiness
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              port: 8088
+              path: /api/depositos/actuator/health/liveness
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-poc-deposito
+spec:
+  ports:
+    - name: 80-8088
+      port: 80
+      protocol: TCP
+      targetPort: 8088
+  selector:
+    app: k8s-poc-deposito
+  type: ClusterIP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysqldb
+  namespace: default
+spec:
+  type: ExternalName
+  externalName: host.docker.internal
+  ports:
+    - name: port
+      port: 3306

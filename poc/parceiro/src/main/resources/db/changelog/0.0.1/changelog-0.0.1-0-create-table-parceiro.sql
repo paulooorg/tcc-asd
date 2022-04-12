@@ -1,0 +1,5 @@
+CREATE TABLE parceiro (
+	id INT AUTO_INCREMENT,
+	nome VARCHAR(70) NOT NULL,
+	PRIMARY KEY (id)
+);

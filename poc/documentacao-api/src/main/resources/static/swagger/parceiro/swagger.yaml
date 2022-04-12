@@ -1,0 +1,225 @@
+openapi: 3.0.1
+info:
+  title: Parceiros API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/parceiros
+    description: localhost - gateway
+paths:
+  /:
+    post:
+      tags:
+        - parceiros
+      summary: Cria um parceiro
+      operationId: criarParceiro
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormParceiroDTO'
+        required: true
+      responses:
+        201:
+          description: Id do parceiro criado
+  /{id}/pedidos/disponiveis:
+    get:
+      tags:
+        - parceiros
+      summary: Busca pedidos disponíveis para o parceiro
+      operationId: buscarPedidosRecebidosNosDepositos
+      parameters:
+        - name: id
+          in: path
+          description: Id do parceiro
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: size
+          in: query
+          description: Page size
+          example: 10
+        - name: page
+          in: query
+          description: Page number
+          example: 0
+        - name: sort
+          in: query
+          description: Sort
+      responses:
+        200:
+          description: Pedidos encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfPedidoSimplificadoDTO'
+  /{id}/atribuir/pedidos:
+    post:
+      tags:
+        - parceiros
+      summary: Atribiu pedidos ao parceiro
+      operationId: atribuirPedidosAoParceiro
+      parameters:
+        - name: id
+          in: path
+          description: Id do parceiro
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormAtribuicaoPedidoDTO'
+        required: true
+      responses:
+        204:
+          description: Pedidos atribuídos
+components:
+  schemas:
+    FormParceiroDTO:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Parceiro
+        depositos:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [1]
+    Pageable:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+        unpaged:
+          type: boolean
+        paged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    Page:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: in32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        peageable:
+          $ref: '#/components/schemas/Pageable'
+        empty:
+          type: boolean
+    PageOfPedidoSimplificadoDTO:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/PedidoSimplificadoDTO'
+    PedidoSimplificadoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        codigo:
+          type: string
+          example: 89f7cb13-033c-4002-aa53-91ed305ce670
+        dataEmissao:
+          type: string
+          example: "2022-04-09T21:10:56"
+        dataEntregaPrevista:
+          type: string
+          example: "2022-04-20"
+        custoFrete:
+          type: number
+          format: double
+        enderecoDestinatario:
+          $ref: '#/components/schemas/EnderecoDTO'
+        responsavelEntrega:
+          type: string
+          example: Responsável entrega
+        situacao:
+          type: string
+          enum:
+            - PEDIDO_CRIADO
+            - PEDIDO_RECEBIDO
+            - EM_TRANSPORTE
+            - ENTREGA_CONCLUIDA
+            - ENTREGA_NAO_CONCLUIDA
+          example: PEDIDO_CRIADO
+        enderecoRemetente:
+          $ref: '#/components/schemas/EnderecoDTO'
+        depositoId:
+          type: integer
+          format: int64
+          example: 1
+    EnderecoDTO:
+      type: object
+      properties:
+        endereco:
+          type: string
+          example: Rua XYZ
+        cidade:
+          type: string
+          example: Chapecó
+        estado:
+          type: string
+          example: SC
+        cep:
+          type: integer
+          format: int32
+          example: 89801000
+        complemento:
+          type: string
+          example: Complemento XYZ
+        contato:
+          type: string
+          example: 49 9 0000-1111
+    FormAtribuicaoPedidoDTO:
+      type: object
+      properties:
+        pedidoIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [1]

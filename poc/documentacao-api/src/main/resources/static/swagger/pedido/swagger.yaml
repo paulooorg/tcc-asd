@@ -1,0 +1,479 @@
+openapi: 3.0.1
+info:
+  title: Pedidos API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/pedidos
+    description: localhost - gateway
+paths:
+  /codigo:
+    get:
+      tags:
+        - pedidos
+      summary: Busca um pedido pelo código
+      operationId: buscarPedidoPorCodigo
+      parameters:
+        - name: codigo
+          in: query
+          description: Código do pedido
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PedidoDTO'
+  /clientes/{clienteId}:
+    get:
+      tags:
+        - pedidos
+      summary: Busca pedidos do cliente
+      operationId: buscarPedidosDoCliente
+      parameters:
+        - name: clienteId
+          in: path
+          description: Id do cliente
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: situacao
+          in: query
+          description: Situação do pedido
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - PEDIDO_CRIADO
+                - PEDIDO_RECEBIDO
+                - EM_TRANSPORTE
+                - ENTREGA_CONCLUIDA
+                - ENTREGA_NAO_CONCLUIDA
+        - name: size
+          in: query
+          description: Page size
+          example: 10
+        - name: page
+          in: query
+          description: Page number
+          example: 0
+        - name: sort
+          in: query
+          description: Sort
+      responses:
+        200:
+          description: Pedidos encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfPedidoSimplificadoDTO'
+  /{pedidoId}/deposito/{depositoId}:
+    patch:
+      tags:
+        - pedidos
+      summary: Adiciona pedido ao depósito
+      operationId: adicionarPedidoNoDeposito
+      parameters:
+        - name: pedidoId
+          in: path
+          description: Id do pedido
+          required: true
+          schema:
+            type: string
+        - name: depositoId
+          in: path
+          description: Id do depósito
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Pedido adicionado ao depósito
+  /situacao/recebido/depositos:
+    get:
+      tags:
+        - pedidos
+      summary: Busca pedidos recebidos nos depósitos informandos
+      operationId: buscarPedidosRecebidosNosDepositos
+      parameters:
+        - name: depositoIds
+          in: query
+          description: Id do depósito
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - name: size
+          in: query
+          description: Page size
+          example: 10
+        - name: page
+          in: query
+          description: Page number
+          example: 0
+        - name: sort
+          in: query
+          description: Sort
+      responses:
+        200:
+          description: Pedidos encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfPedidoSimplificadoDTO'
+components:
+  schemas:
+    FormCalcularFreteDTO:
+      type: object
+      properties:
+        cepOrigem:
+          type: integer
+          format: int32
+          example: 123
+        cepDestino:
+          type: integer
+          format: int32
+          example: 456
+        volumes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormVolumeDTO'
+        servicosOpcionais:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormServicoOpcionalDTO'
+    CustoFreteDTO:
+        type: object
+        properties:
+          prazoDiasUteis:
+            type: integer
+            format: int32
+            example: 10
+          custoTotal:
+            type: number
+            format: double
+            example: 10
+          custoFrete:
+            type: number
+            format: double
+            example: 10
+          custoServicos:
+            type: number
+            format: double
+            example: 5
+          descontoCliente:
+            type: number
+            format: double
+            example: 5
+    FormVolumeDTO:
+        type: object
+        properties:
+          formato:
+            type: string
+            enum:
+              - CAIXA
+              - ENVELOPE
+          peso:
+            type: number
+            format: double
+            example: 10
+          unidadeMedidaPeso:
+            type: string
+            enum:
+              - KG
+              - G
+          altura:
+            type: number
+            format: double
+            example: 50
+          largura:
+            type: number
+            format: double
+            example: 50
+          comprimento:
+            type: number
+            format: double
+            example: 50
+          quantidade:
+            type: integer
+            format: int32
+            example: 1
+    FormServicoOpcionalDTO:
+      type: object
+      properties:
+        tipo:
+          type: string
+          enum:
+            - SEGURO
+        parametros:
+          type: object
+          example:
+            valorDeclarado: 150
+    FormCriarPedidoDTO:
+      type: object
+      properties:
+        clienteId:
+          type: integer
+          format: int2
+          example: 1
+        enderecoId:
+          type: integer
+          format: int2
+          example: 1
+        nomeDestinatario:
+          type: string
+          example: Nome destinatário
+        documentoDestinatario:
+          type: string
+          example: 23.405.170/0001-51
+        enderecoDestinatario:
+          $ref: '#/components/schemas/FormEnderecoDTO'
+        volumes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormVolumeDTO'
+        servicosOpcionais:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormServicoOpcionalDTO'
+    FormEnderecoDTO:
+      type: object
+      properties:
+        endereco:
+          type: string
+          example: Rua XYZ
+        cidade:
+          type: string
+          example: Chapecó
+        estado:
+          type: string
+          example: SC
+        cep:
+          type: integer
+          format: int32
+          example: 89801000
+        complemento:
+          type: string
+          example: Complemento XYZ
+        contato:
+          type: string
+          example: 49 9 0000-1111
+        clienteId:
+          type: integer
+          format: int64
+          example: 1
+    PedidoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        codigo:
+          type: string
+          example: 89f7cb13-033c-4002-aa53-91ed305ce670
+        dataEmissao:
+          type: string
+          example: "2022-04-09T21:10:56"
+        dataEntregaPrevista:
+          type: string
+          example: "2022-04-20"
+        custoFrete:
+          type: number
+          format: double
+        nomeDestinatario:
+          type: string
+          example: Nome destinatário
+        documentoDestinatario:
+          type: string
+          example: 23.405.170/0001-51
+        enderecoDestinatario:
+          $ref: '#/components/schemas/EnderecoDTO'
+        volumes:
+          type: array
+          items:
+            $ref: '#/components/schemas/VolumeDTO'
+        responsavelEntrega:
+          type: string
+          example: Responsável entrega
+        situacao:
+          type: string
+          enum:
+            - PEDIDO_CRIADO
+            - PEDIDO_RECEBIDO
+            - EM_TRANSPORTE
+            - ENTREGA_CONCLUIDA
+            - ENTREGA_NAO_CONCLUIDA
+          example: PEDIDO_CRIADO
+        nomeRemetente:
+          type: string
+          example: Nome remetente
+        enderecoRemetente:
+          $ref: '#/components/schemas/EnderecoDTO'
+        depositoId:
+          type: integer
+          format: int64
+          example: 1
+    PedidoSimplificadoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        codigo:
+          type: string
+          example: 89f7cb13-033c-4002-aa53-91ed305ce670
+        dataEmissao:
+          type: string
+          example: "2022-04-09T21:10:56"
+        dataEntregaPrevista:
+          type: string
+          example: "2022-04-20"
+        custoFrete:
+          type: number
+          format: double
+        enderecoDestinatario:
+          $ref: '#/components/schemas/EnderecoDTO'
+        responsavelEntrega:
+          type: string
+          example: Responsável entrega
+        situacao:
+          type: string
+          enum:
+            - PEDIDO_CRIADO
+            - PEDIDO_RECEBIDO
+            - EM_TRANSPORTE
+            - ENTREGA_CONCLUIDA
+            - ENTREGA_NAO_CONCLUIDA
+          example: PEDIDO_CRIADO
+        enderecoRemetente:
+          $ref: '#/components/schemas/EnderecoDTO'
+        depositoId:
+          type: integer
+          format: int64
+          example: 1
+    EnderecoDTO:
+      type: object
+      properties:
+        endereco:
+          type: string
+          example: Rua XYZ
+        cidade:
+          type: string
+          example: Chapecó
+        estado:
+          type: string
+          example: SC
+        cep:
+          type: integer
+          format: int32
+          example: 89801000
+        complemento:
+          type: string
+          example: Complemento XYZ
+        contato:
+          type: string
+          example: 49 9 0000-1111
+    Pageable:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+        unpaged:
+          type: boolean
+        paged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    Page:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: in32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        peageable:
+          $ref: '#/components/schemas/Pageable'
+        empty:
+          type: boolean
+    PageOfPedidoSimplificadoDTO:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/PedidoSimplificadoDTO'
+    VolumeDTO:
+      type: object
+      properties:
+        formato:
+          type: string
+          enum:
+            - CAIXA
+            - ENVELOPE
+        peso:
+          type: number
+          format: double
+          example: 10
+        unidadeMedidaPeso:
+          type: string
+          enum:
+            - KG
+            - G
+        altura:
+          type: number
+          format: double
+          example: 50
+        largura:
+          type: number
+          format: double
+          example: 50
+        comprimento:
+          type: number
+          format: double
+          example: 50
+        quantidade:
+          type: integer
+          format: int32
+          example: 1

@@ -1,0 +1,14 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /api/fretes
+management:
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+  endpoint.health.probes.enabled: true
+spring:
+  application:
+    name: frete
+logging.level:
+  org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

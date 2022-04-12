@@ -1,0 +1,111 @@
+openapi: 3.0.1
+info:
+  title: Fretes API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/fretes
+    description: localhost - gateway
+paths:
+  /calcular:
+    post:
+      tags:
+        - cálculo frete
+      summary: Calcula custo do frete
+      operationId: calcular
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormCalcularFreteDTO'
+        required: true
+      responses:
+        200:
+          description: Custo do frete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustoFreteDTO'
+components:
+  schemas:
+    FormCalcularFreteDTO:
+      type: object
+      properties:
+        cepOrigem:
+          type: integer
+          format: int32
+          example: 123
+        cepDestino:
+          type: integer
+          format: int32
+          example: 456
+        volumes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormVolumeDTO'
+        servicosOpcionais:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormServicoOpcionalDTO'
+    CustoFreteDTO:
+        type: object
+        properties:
+          prazoDiasUteis:
+            type: integer
+            format: int32
+            example: 10
+          custoTotal:
+            type: number
+            format: double
+            example: 15
+          custoFrete:
+            type: number
+            format: double
+            example: 10
+          custoServicos:
+            type: number
+            format: double
+            example: 5
+    FormVolumeDTO:
+        type: object
+        properties:
+          formato:
+            type: string
+            enum:
+              - CAIXA
+              - ENVELOPE
+          peso:
+            type: number
+            format: double
+            example: 10
+          unidadeMedidaPeso:
+            type: string
+            enum:
+              - KG
+              - G
+          altura:
+            type: number
+            format: double
+            example: 50
+          largura:
+            type: number
+            format: double
+            example: 50
+          comprimento:
+            type: number
+            format: double
+            example: 50
+          quantidade:
+            type: integer
+            format: int32
+            example: 1
+    FormServicoOpcionalDTO:
+      type: object
+      properties:
+        tipo:
+          type: string
+          enum:
+            - SEGURO
+        parametros:
+          type: object
+          example:
+            valorDeclarado: 150

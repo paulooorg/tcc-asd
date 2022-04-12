@@ -1,0 +1,33 @@
+# https://kubernetes.github.io/ingress-nginx/deploy/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: k8s-poc-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/server-snippet: |
+      if ($http_host = desenvolvedores.boaentrega.com.br)
+      {
+         rewrite (.*) http://api.boaentrega.com.br/documentacao-api/docs.html$1;
+      }
+spec:
+  rules:
+  - host: api.boaentrega.com.br
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: k8s-poc-gateway
+            port:
+              number: 8080
+  - host: desenvolvedores.boaentrega.com.br
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: k8s-poc-gateway
+            port:
+              number: 8080
