@@ -6,4 +6,4 @@
 * Macroarquitetura: https://vimeo.com/699897067
 * Detalhado POC: https://vimeo.com/699896974
 
-Os vídeos também estão disponíveis na pasta [videos](/docs/videos/README.md)
+Os vídeos também estão disponíveis na pasta [videos](/docs/videos)
